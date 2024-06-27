@@ -1,10 +1,12 @@
 package com.ngleanhvu.shopapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +22,7 @@ public class ProductDTO extends BaseEntity {
     @Max(value = 10000000, message = "Price must be less than 10000000 or equal 10000000")
     float price;
     String thumbnail;
-    @JsonProperty(namespace = "category_id")
+    @JsonProperty("category_id")
     String categoryId;
+    List<MultipartFile> files;
 }
