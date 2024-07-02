@@ -5,16 +5,17 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Builder
-@Data
-@Table(name = "categories")
+@Table(name = "roles")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     String name;
 }

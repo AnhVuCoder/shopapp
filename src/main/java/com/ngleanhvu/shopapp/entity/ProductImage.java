@@ -5,16 +5,20 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Builder
-@Data
-@Table(name = "categories")
+@Table(name = "product_images")
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category {
+public class ProductImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @Column(nullable = false)
-    String name;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    Product product;
+    @Column(name = "image_url", length = 255)
+    String imageUrl;
 }

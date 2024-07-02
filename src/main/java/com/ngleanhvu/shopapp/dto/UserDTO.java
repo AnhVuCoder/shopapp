@@ -7,7 +7,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -20,7 +19,7 @@ public class UserDTO {
     String fullName;
     @JsonProperty("phone_number")
     @NotBlank(message = "Phone number is required")
-    String phone_number;
+    String phoneNumber;
     String address;
     @NotBlank(message = "Password is required")
     String password;
@@ -34,5 +33,5 @@ public class UserDTO {
     String googleAccountId;
     @NotNull(message = "Role id is required")
     @JsonProperty("role_id")
-    Long roleId;
+    Integer roleId;
 }
