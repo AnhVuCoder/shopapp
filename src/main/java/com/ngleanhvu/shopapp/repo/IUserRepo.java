@@ -18,5 +18,5 @@ public interface IUserRepo extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u " +
             "WHERE u.phoneNumber = :phoneNumber"
     )
-    Optional<UserDTO> findUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+    Optional<User> findUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

@@ -22,3 +22,7 @@ spring:
 
 api:
   prefix: api/v1
+
+jwt:
+  expiration: 2592000
+  secrete_key: taolasieunhangao
