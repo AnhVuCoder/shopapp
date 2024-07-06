@@ -11,8 +11,8 @@ import com.ngleanhvu.shopapp.repo.IOrderRepo;
 import com.ngleanhvu.shopapp.repo.IProductRepo;
 import com.ngleanhvu.shopapp.response.OrderDetailResponse;
 import com.ngleanhvu.shopapp.service.IOrderDetailService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +20,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class OrderDetailService implements IOrderDetailService {
-    private final IOrderDetailRepo iOrderDetailRepo;
-    private final IOrderRepo iOrderRepo;
-    private final IProductRepo iProductRepo;
-    private final ModelMapper modelMapper;
+    @Autowired
+    private IOrderDetailRepo iOrderDetailRepo;
+    @Autowired
+    private IOrderRepo iOrderRepo;
+    @Autowired
+    private IProductRepo iProductRepo;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public OrderDetailResponse createOrderDetail(OrderDetailDTO orderDetailDTO) throws DataNotFoundException {

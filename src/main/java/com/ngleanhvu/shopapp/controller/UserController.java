@@ -4,7 +4,7 @@ import com.ngleanhvu.shopapp.dto.UserDTO;
 import com.ngleanhvu.shopapp.dto.UserLoginDTO;
 import com.ngleanhvu.shopapp.service.IUserService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -17,10 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/users")
-@RequiredArgsConstructor
 public class UserController {
-
-    private final IUserService iUserService;
+    @Autowired
+    private IUserService iUserService;
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
@@ -43,7 +42,11 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
-        String token = iUserService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
-        return ResponseEntity.ok("Some tokens");
+        try {
+            String token = iUserService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+            return ResponseEntity.ok().body(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

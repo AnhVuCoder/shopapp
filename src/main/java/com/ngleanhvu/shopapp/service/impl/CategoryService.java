@@ -5,20 +5,19 @@ import com.ngleanhvu.shopapp.dto.CategoryDTO;
 import com.ngleanhvu.shopapp.entity.Category;
 import com.ngleanhvu.shopapp.repo.ICategoryRepo;
 import com.ngleanhvu.shopapp.service.ICategoryService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
-
-    private final ICategoryRepo iCategoryRepo;
-
-    private final ModelMapper modelMapper;
+    @Autowired
+    private ICategoryRepo iCategoryRepo;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {

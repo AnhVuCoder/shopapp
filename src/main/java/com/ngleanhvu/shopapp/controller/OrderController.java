@@ -3,7 +3,7 @@ package com.ngleanhvu.shopapp.controller;
 import com.ngleanhvu.shopapp.dto.OrderDTO;
 import com.ngleanhvu.shopapp.service.IOrderService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -13,9 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/orders")
-@RequiredArgsConstructor
 public class OrderController {
-    private final IOrderService iOrderService;
+    @Autowired
+    private IOrderService iOrderService;
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody @Valid OrderDTO orderDTO,

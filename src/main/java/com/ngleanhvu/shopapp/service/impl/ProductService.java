@@ -7,14 +7,14 @@ import com.ngleanhvu.shopapp.entity.Category;
 import com.ngleanhvu.shopapp.entity.Product;
 import com.ngleanhvu.shopapp.entity.ProductImage;
 import com.ngleanhvu.shopapp.exception.DataNotFoundException;
-import com.ngleanhvu.shopapp.exception.InvalidPramException;
+import com.ngleanhvu.shopapp.exception.InvalidParamException;
 import com.ngleanhvu.shopapp.repo.ICategoryRepo;
 import com.ngleanhvu.shopapp.repo.IProductImageRepo;
 import com.ngleanhvu.shopapp.repo.IProductRepo;
 import com.ngleanhvu.shopapp.response.ProductResponse;
 import com.ngleanhvu.shopapp.service.IProductService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -22,12 +22,15 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ProductService implements IProductService {
-    private final ICategoryRepo iCategoryRepo;
-    private final IProductRepo iProductRepo;
-    private final ModelMapper modelMapper;
-    private final IProductImageRepo iProductImageRepo;
+    @Autowired
+    private ICategoryRepo iCategoryRepo;
+    @Autowired
+    private IProductRepo iProductRepo;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private IProductImageRepo iProductImageRepo;
 
     @Override
     public ProductDTO createProduct(ProductDTO productDTO) throws Exception {
@@ -76,13 +79,13 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductImageDTO createProductImage(Integer productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidPramException {
+    public ProductImageDTO createProductImage(Integer productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidParamException {
         Product product = iProductRepo.findById(productId)
                 .orElseThrow(() -> new DataNotFoundException(Constant.PRODUCT_NOT_FOUND));
         ProductImage productImage = modelMapper.map(productImageDTO, ProductImage.class);
         int size = iProductImageRepo.findByProductId(productId).size();
         if (size >= Constant.PRODUCT_PICTURE_QUANTITY) {
-            throw new InvalidPramException("Number of product image must <= 5");
+            throw new InvalidParamException("Number of product image must <= 5");
         }
         iProductImageRepo.save(productImage);
         return modelMapper.map(productImage, ProductImageDTO.class);

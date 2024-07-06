@@ -5,12 +5,12 @@ import com.ngleanhvu.shopapp.constant.Constant;
 import com.ngleanhvu.shopapp.dto.ProductDTO;
 import com.ngleanhvu.shopapp.dto.ProductImageDTO;
 import com.ngleanhvu.shopapp.exception.DataNotFoundException;
-import com.ngleanhvu.shopapp.exception.InvalidPramException;
+import com.ngleanhvu.shopapp.exception.InvalidParamException;
 import com.ngleanhvu.shopapp.response.ProductListResponse;
 import com.ngleanhvu.shopapp.response.ProductResponse;
 import com.ngleanhvu.shopapp.service.IProductService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,10 +35,9 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
-@RequiredArgsConstructor
 public class ProductController {
-
-    private final IProductService iProductService;
+    @Autowired
+    private IProductService iProductService;
 
     @GetMapping
     public ResponseEntity<ProductListResponse> getAllProducts(@RequestParam("page") int page,
@@ -77,7 +76,7 @@ public class ProductController {
     @PostMapping(value = "uploads/{product_id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(@ModelAttribute("files") List<MultipartFile> files,
-                                         @PathVariable("product_id") Integer productId) throws IOException, DataNotFoundException, InvalidPramException {
+                                         @PathVariable("product_id") Integer productId) throws IOException, DataNotFoundException, InvalidParamException {
         try {
             ProductDTO productDTO = iProductService.getProductById(productId);
             files = files == null ? new ArrayList<MultipartFile>() : files;

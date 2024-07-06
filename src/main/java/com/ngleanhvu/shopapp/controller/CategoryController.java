@@ -3,7 +3,7 @@ package com.ngleanhvu.shopapp.controller;
 import com.ngleanhvu.shopapp.dto.CategoryDTO;
 import com.ngleanhvu.shopapp.service.ICategoryService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -13,10 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/categories")
-@RequiredArgsConstructor
 public class CategoryController {
-
-    private final ICategoryService iCategoryService;
+    @Autowired
+    private ICategoryService iCategoryService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable("id") Integer id) {

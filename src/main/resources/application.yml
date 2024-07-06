@@ -25,4 +25,4 @@ api:
 
 jwt:
   expiration: 2592000
-  secrete_key: taolasieunhangao
+  secretKey: TaqlmGv1iEDMRiFp/pHuID1+T84IABfuA0xXh4GhiUI=

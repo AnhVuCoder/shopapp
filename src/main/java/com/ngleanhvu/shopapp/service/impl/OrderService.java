@@ -10,8 +10,8 @@ import com.ngleanhvu.shopapp.repo.IOrderRepo;
 import com.ngleanhvu.shopapp.repo.IUserRepo;
 import com.ngleanhvu.shopapp.response.OrderResponse;
 import com.ngleanhvu.shopapp.service.IOrderService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,11 +20,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class OrderService implements IOrderService {
-    private final IOrderRepo iOrderRepo;
-    private final IUserRepo iUserRepo;
-    private final ModelMapper modelMapper;
+    @Autowired
+    private IOrderRepo iOrderRepo;
+    @Autowired
+    private IUserRepo iUserRepo;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public OrderResponse createOrder(OrderDTO orderDTO) throws DataNotFoundException {
@@ -61,6 +63,7 @@ public class OrderService implements IOrderService {
         modelMapper.typeMap(OrderDTO.class, Order.class)
                 .addMappings(mapper -> mapper.skip(Order::setId));
         modelMapper.map(orderDTO, order);
+        iOrderRepo.save(order);
         return modelMapper.map(order, OrderResponse.class);
     }
 

@@ -4,15 +4,15 @@ import com.ngleanhvu.shopapp.dto.OrderDetailDTO;
 import com.ngleanhvu.shopapp.exception.DataNotFoundException;
 import com.ngleanhvu.shopapp.service.IOrderDetailService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.prefix}/order_details")
-@RequiredArgsConstructor
 public class OrderDetailController {
-    private final IOrderDetailService iOrderDetailService;
+    @Autowired
+    private IOrderDetailService iOrderDetailService;
 
     @PostMapping
     public ResponseEntity<?> createOrderDetail(@Valid @RequestBody OrderDetailDTO orderDetailDTO) {

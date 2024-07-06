@@ -3,7 +3,7 @@ package com.ngleanhvu.shopapp.service;
 import com.ngleanhvu.shopapp.dto.ProductDTO;
 import com.ngleanhvu.shopapp.dto.ProductImageDTO;
 import com.ngleanhvu.shopapp.exception.DataNotFoundException;
-import com.ngleanhvu.shopapp.exception.InvalidPramException;
+import com.ngleanhvu.shopapp.exception.InvalidParamException;
 import com.ngleanhvu.shopapp.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,5 +21,5 @@ public interface IProductService {
 
     boolean existsByName(String name);
 
-    ProductImageDTO createProductImage(Integer productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidPramException;
+    ProductImageDTO createProductImage(Integer productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidParamException;
 }
