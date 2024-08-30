@@ -10,4 +10,9 @@ public class Constant {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String ORDER_NOT_FOUND = "Order not found";
     public static final String ORDER_DETAIL_NOT_FOUND = "Order detail not found";
+    public static final String LOGIN_SUCCESSFULLY = "user.login.login_successfully";
+    public static final String LOGIN_FAILED = "user.login.login_failed";
+    public static final String DELETE_CATEGORY_SUCCESSFULLY="category.delete_category.delete_successfully";
+    public static final String DELETE_CATEGORY_FAILED="category.delete_category.delete_failed";
+    public static final String ROLE_NOT_EXIST="role.role_failed.role_not_founded";
 }

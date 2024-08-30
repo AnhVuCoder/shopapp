@@ -8,6 +8,7 @@ import com.ngleanhvu.shopapp.service.ICategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class CategoryService implements ICategoryService {
     private ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         Category category = modelMapper.map(categoryDTO, Category.class);
         iCategoryRepo.save(category);
@@ -42,6 +44,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDTO updateCategory(Integer id, CategoryDTO categoryDTO) {
         Category existingCategory = iCategoryRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException(Constant.CATEGORY_NOT_FOUND));
@@ -51,6 +54,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategoryById(Integer id) {
         Category category = iCategoryRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException(Constant.CATEGORY_NOT_FOUND));

@@ -1,7 +1,9 @@
 package com.ngleanhvu.shopapp.controller;
 
+import com.ngleanhvu.shopapp.constant.Constant;
 import com.ngleanhvu.shopapp.dto.CategoryDTO;
 import com.ngleanhvu.shopapp.service.ICategoryService;
+import com.ngleanhvu.shopapp.util.LocalizationUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -16,7 +18,8 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private ICategoryService iCategoryService;
-
+    @Autowired
+    private LocalizationUtils localizationUtils;
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable("id") Integer id) {
         try {
@@ -27,8 +30,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                              @RequestParam(value = "limit", defaultValue = "0") Integer limit) {
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         return ResponseEntity.ok().body(iCategoryService.getAllCategories());
     }
 
@@ -71,9 +73,11 @@ public class CategoryController {
     public ResponseEntity<String> deleteCategory(@PathVariable Integer id) {
         try {
             iCategoryService.deleteCategoryById(id);
-            return ResponseEntity.ok().body("Delete successfully");
+            return ResponseEntity.ok().body(localizationUtils.getLocalizationUtils(Constant.DELETE_CATEGORY_SUCCESSFULLY, id));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest()
+                    .header("Content-Type","text/plain; charset=  UTF-8")
+                    .body(localizationUtils.getLocalizationUtils(Constant.DELETE_CATEGORY_FAILED, id, e.getMessage()));
         }
     }
 }

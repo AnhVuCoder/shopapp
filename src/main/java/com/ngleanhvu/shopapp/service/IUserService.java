@@ -6,5 +6,5 @@ import com.ngleanhvu.shopapp.exception.DataNotFoundException;
 public interface IUserService {
     UserDTO createUser(UserDTO userDTO) throws DataNotFoundException;
 
-    String login(String phoneNumber, String password) throws Exception;
+    String login(String phoneNumber, String password, Integer roleId) throws Exception;
 }

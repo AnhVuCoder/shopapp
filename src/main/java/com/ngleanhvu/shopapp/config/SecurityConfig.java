@@ -2,6 +2,7 @@ package com.ngleanhvu.shopapp.config;
 
 import com.ngleanhvu.shopapp.constant.Constant;
 import com.ngleanhvu.shopapp.repo.IUserRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
-    @Autowired
-    private IUserRepo iUserRepo;
+    private final IUserRepo iUserRepo;
     // User detail object
     @Bean
     public UserDetailsService userDetailsService(){

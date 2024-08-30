@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @Data
@@ -39,4 +40,6 @@ public class OrderDTO {
     String paymentMethod;
     @JsonProperty("shipping_date")
     LocalDate shippingDate;
+    @JsonProperty("cart_items")
+    List<CartItemDTO> cartItemDTOs;
 }

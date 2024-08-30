@@ -18,8 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService implements IProductService {
@@ -33,6 +36,7 @@ public class ProductService implements IProductService {
     private IProductImageRepo iProductImageRepo;
 
     @Override
+    @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) throws Exception {
         Category category = iCategoryRepo.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND));
@@ -42,20 +46,24 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDTO getProductById(Integer id) throws DataNotFoundException {
-        Product product = iProductRepo.findById(id)
-                .orElseThrow(() -> new DataNotFoundException(Constant.PRODUCT_NOT_FOUND));
-        return modelMapper.map(product, ProductDTO.class);
+    public ProductResponse getProductById(Integer id) throws DataNotFoundException {
+//        Product product = iProductRepo.findById(id)
+//                .orElseThrow(() -> new DataNotFoundException(Constant.PRODUCT_NOT_FOUND));
+//        return ProductResponse.fromProductResponse(product);
+        Product product = iProductRepo.getDetailProduct(id);
+        return ProductResponse.fromProductResponse(product);
     }
 
     @Override
-    public Page<ProductResponse> getAllProducts(PageRequest pageRequest) {
-        return iProductRepo.findAll(pageRequest)
-                .map(ProductResponse::fromProductResponse);
+    public Page<ProductResponse> getAllProducts(String keyword, Integer categoryId, PageRequest pageRequest) {
+        Page<Product> productsPage;
+        productsPage = iProductRepo.searchProducts(categoryId, keyword, pageRequest);
+        return productsPage.map(ProductResponse::fromProductResponse);
     }
 
 
     @Override
+    @Transactional
     public ProductDTO updateProduct(Integer id, ProductDTO productDTO) throws DataNotFoundException {
         Product existingProduct = iProductRepo.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(Constant.PRODUCT_NOT_FOUND));
@@ -68,6 +76,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProductByIdd(Integer id) throws DataNotFoundException {
         Optional<Product> optionalProduct = iProductRepo.findById(id);
         optionalProduct.ifPresent(iProductRepo::delete);
@@ -79,6 +88,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public ProductImageDTO createProductImage(Integer productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidParamException {
         Product product = iProductRepo.findById(productId)
                 .orElseThrow(() -> new DataNotFoundException(Constant.PRODUCT_NOT_FOUND));
@@ -89,5 +99,13 @@ public class ProductService implements IProductService {
         }
         iProductImageRepo.save(productImage);
         return modelMapper.map(productImage, ProductImageDTO.class);
+    }
+
+    @Override
+    public List<ProductResponse> findProductByIds(List<Integer> productIds) {
+        List<Product> products = iProductRepo.findProductByIds(productIds);
+        return products.stream()
+                .map(product -> modelMapper.map(product, ProductResponse.class))
+                .collect(Collectors.toList());
     }
 }

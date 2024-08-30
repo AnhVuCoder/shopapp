@@ -4,13 +4,16 @@ import com.github.javafaker.Faker;
 import com.ngleanhvu.shopapp.constant.Constant;
 import com.ngleanhvu.shopapp.dto.ProductDTO;
 import com.ngleanhvu.shopapp.dto.ProductImageDTO;
+import com.ngleanhvu.shopapp.entity.Product;
 import com.ngleanhvu.shopapp.exception.DataNotFoundException;
 import com.ngleanhvu.shopapp.exception.InvalidParamException;
+import com.ngleanhvu.shopapp.repo.IProductRepo;
 import com.ngleanhvu.shopapp.response.ProductListResponse;
 import com.ngleanhvu.shopapp.response.ProductResponse;
 import com.ngleanhvu.shopapp.service.IProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,31 +31,47 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
 public class ProductController {
     @Autowired
     private IProductService iProductService;
-
     @GetMapping
-    public ResponseEntity<ProductListResponse> getAllProducts(@RequestParam("page") int page,
-                                                              @RequestParam("limit") int limit) {
+    public ResponseEntity<ProductListResponse> getAllProducts(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                              @RequestParam(name = "limit", defaultValue = "10") int limit,
+                                                              @RequestParam(name = "keyword", defaultValue = "") String keyword,
+                                                              @RequestParam(name = "category_id", defaultValue = "0") Integer categoryId) {
         PageRequest pageRequest = PageRequest.of(
-                page, limit,
-                Sort.by("createdAt").descending()
+                page-1, limit,
+                Sort.by("id").ascending()
         );
-        Page<ProductResponse> productPage = iProductService.getAllProducts(pageRequest);
+        Page<ProductResponse> productPage = iProductService.getAllProducts(keyword, categoryId, pageRequest);
         List<ProductResponse> list = productPage.getContent();
         return ResponseEntity.ok().body(ProductListResponse.builder()
                 .productResponseList(list)
                 .totalPages(productPage.getTotalPages()).build());
     }
-
+    @GetMapping("/images/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName){
+        try{
+            java.nio.file.Path imagePath=Paths.get("uploads/"+imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if(resource.exists()){
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/notFound.jpeg").toUri()));
+            }
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
     // API add a new product
     @PostMapping
     public ResponseEntity<?> insertProduct(@Valid @RequestBody ProductDTO productDTO,
@@ -78,9 +97,8 @@ public class ProductController {
     public ResponseEntity<?> uploadImage(@ModelAttribute("files") List<MultipartFile> files,
                                          @PathVariable("product_id") Integer productId) throws IOException, DataNotFoundException, InvalidParamException {
         try {
-            ProductDTO productDTO = iProductService.getProductById(productId);
             files = files == null ? new ArrayList<MultipartFile>() : files;
-            if (files.size() > Constant.FILE_SIZE) {
+            if (files.size() > 5) {
                 throw new DataNotFoundException("Quantity of product image must be <= 5");
             }
             List<ProductImageDTO> list = new ArrayList<>();
@@ -131,15 +149,16 @@ public class ProductController {
     }
 
     //    @PostMapping("/generateFakeProductsData")
+
     private ResponseEntity<String> generateFakeProductsData() throws Exception {
         Faker faker = new Faker();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 100  ; i++) {
             String name = faker.commerce().productName();
             if (iProductService.existsByName(name)) continue;
             ProductDTO productDTO = ProductDTO.builder()
                     .name(name)
                     .price((float) faker.number().numberBetween(10, 90000000))
-                    .categoryId(faker.number().numberBetween(1, 3))
+                    .categoryId(faker.number().numberBetween(1, 5))
                     .description(faker.lorem().sentence())
                     .thumbnail("")
                     .build();
@@ -152,10 +171,11 @@ public class ProductController {
         return ResponseEntity.ok().body("Fake products is created successfully");
     }
 
-    @PutMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Integer id) {
         try {
-            return ResponseEntity.ok().body(iProductService.getProductById(id));
+            ProductResponse productResponse = iProductService.getProductById(id);
+            return ResponseEntity.ok().body(productResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -167,6 +187,18 @@ public class ProductController {
             iProductService.deleteProductByIdd(id);
             return ResponseEntity.ok().body("Delete successfully!!!");
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/by-ids")
+    public ResponseEntity<?> getProductByIds(@RequestParam("ids") String ids){
+        try{
+            List<Integer> listIds = Arrays.stream(ids.split(","))
+                    .map(Integer::parseInt)
+                    .toList();
+            List<ProductResponse> productResponses = iProductService.findProductByIds(listIds);
+            return ResponseEntity.ok().body(productResponses);
+        } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

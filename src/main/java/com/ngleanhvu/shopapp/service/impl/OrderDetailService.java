@@ -14,6 +14,7 @@ import com.ngleanhvu.shopapp.service.IOrderDetailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class OrderDetailService implements IOrderDetailService {
     private ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public OrderDetailResponse createOrderDetail(OrderDetailDTO orderDetailDTO) throws DataNotFoundException {
         Order order = iOrderRepo.findById(orderDetailDTO.getOrderId())
                 .orElseThrow(() -> new DataNotFoundException(Constant.ORDER_NOT_FOUND));
@@ -49,6 +51,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetailResponse updateOrderDetail(Integer id, OrderDetailDTO orderDetailDTO) throws DataNotFoundException {
         OrderDetail orderDetail = iOrderDetailRepo.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(Constant.ORDER_DETAIL_NOT_FOUND));
@@ -72,6 +75,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public void deleteOrderDetail(Integer id) {
         Optional<OrderDetail> optionalOrderDetail = iOrderDetailRepo.findById(id);
         optionalOrderDetail.ifPresent(iOrderDetailRepo::delete);

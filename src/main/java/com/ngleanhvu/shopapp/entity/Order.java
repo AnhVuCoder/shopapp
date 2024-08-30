@@ -1,11 +1,13 @@
 package com.ngleanhvu.shopapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 @Builder
 @Table(name = "orders")
@@ -33,7 +35,7 @@ public class Order {
     @Column(name = "note", length = 100)
     String note;
     @Column(name = "order_date")
-    Date orderDate;
+    LocalDate orderDate;
     @Column(name = "status")
     String status;
     @Column(name = "total_money")
@@ -49,4 +51,7 @@ public class Order {
 //    @Column(name = "payment_date")
 //    LocalDate paymentDate; // Khi nguoi dung hanh toan moi cap nhat
     boolean active;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<OrderDetail> orderDetails;
 }

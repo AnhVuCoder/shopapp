@@ -40,7 +40,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
             String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                return;
+            }
                 final String token = authHeader.substring(7);
                 final String phoneNumber = jwtTokenUtil.extractPhoneNumber(token);
                 if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -55,8 +58,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                     }
                 }
-            }
-            filterChain.doFilter(request, response);
+                filterChain.doFilter(request, response);
+
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
@@ -67,11 +70,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/products", apiPrefix), "GET"),
                 Pair.of(String.format("%s/categories", apiPrefix), "GET"),
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/register", apiPrefix), "POST")
+                Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
+                Pair.of(String.format("%s/roles", apiPrefix), "GET"),
+                Pair.of(String.format("%s/orders", apiPrefix), "GET")
         );
         for (Pair<String, String> byPassToken : byPassTokens) {
             if (request.getServletPath().contains(byPassToken.getFirst()) &&
-                    request.getMethod().contains(byPassToken.getSecond()))
+                    request.getMethod().equals(byPassToken.getSecond()))
                 return true;
         }
         return false;

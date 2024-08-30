@@ -1,5 +1,7 @@
 package com.ngleanhvu.shopapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +20,9 @@ public class ProductImage {
     Integer id;
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     Product product;
     @Column(name = "image_url", length = 255)
+    @JsonProperty("image_url")
     String imageUrl;
 }
