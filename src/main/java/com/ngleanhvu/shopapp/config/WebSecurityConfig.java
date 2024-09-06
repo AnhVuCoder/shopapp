@@ -31,11 +31,12 @@ public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
     @Value("${api.prefix}")
     private String apiPrefix;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-         httpSecurity
-                 .csrf(AbstractHttpConfigurer::disable)
-                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> {
                     requests
                             .requestMatchers(
@@ -75,10 +76,10 @@ public class WebSecurityConfig {
 
                             .requestMatchers(HttpMethod.POST,
                                     String.format("%s/orders/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/orders/get-orders-by-keyword", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.GET,
                                     String.format("%s/orders/**", apiPrefix)).permitAll()
-
                             .requestMatchers(PUT,
                                     String.format("%s/orders/**", apiPrefix)).hasRole(Role.ADMIN)
 
@@ -99,19 +100,19 @@ public class WebSecurityConfig {
 
                             .anyRequest().authenticated();
                 });
-         httpSecurity.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
-             @Override
-             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
-                 CorsConfiguration configuration = new CorsConfiguration();
-                 configuration.setAllowedOrigins(List.of("*"));
-                 configuration.setAllowedMethods(Arrays.asList("POST","GET","PUT","DELETE","PATCH","OPTIONS"));
-                 configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-                 configuration.setExposedHeaders(List.of("x-auth-token"));
-                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                 source.registerCorsConfiguration("/**",configuration);
-                 httpSecurityCorsConfigurer.configurationSource(source);
-             }
-         });
-                return httpSecurity.build();
+        httpSecurity.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
+            @Override
+            public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(List.of("*"));
+                configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+                configuration.setExposedHeaders(List.of("x-auth-token"));
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                httpSecurityCorsConfigurer.configurationSource(source);
+            }
+        });
+        return httpSecurity.build();
     }
 }

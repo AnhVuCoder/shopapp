@@ -29,6 +29,7 @@ public class OrderResponse {
     String note;
     @JsonProperty("order_date")
     LocalDate orderDate;
+    @JsonProperty("status")
     String status;
     @JsonProperty("total_money")
     Float totalMoney;
@@ -46,7 +47,8 @@ public class OrderResponse {
     boolean active;
     @JsonProperty("order_details")
     List<OrderDetail> orderDetails;
-    public static OrderResponse fromOrder(Order order){
+
+    public static OrderResponse fromOrder(Order order) {
         return OrderResponse.builder()
                 .id(order.getId())
                 .userId(order.getUser().getId())

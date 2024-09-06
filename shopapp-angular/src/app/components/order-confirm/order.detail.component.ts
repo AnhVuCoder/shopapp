@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { OrderResponse } from '../../responses/order/OrderResponse';
 import { OrderService } from '../../services/order.service';
 import { iterator } from 'rxjs/internal/symbol/iterator';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-order-detail',
@@ -36,12 +37,15 @@ export class OrderDetailComponent implements OnInit {
     payment_method: '',
     order_details: [],
   };
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private router: ActivatedRoute
+  ) {}
   ngOnInit(): void {
     this.getOrderDetails();
   }
   getOrderDetails(): void {
-    const orderId = 4;
+    let orderId = Number(this.router.snapshot.paramMap.get('id'));
     this.orderService.getOrderById(orderId).subscribe({
       next: (response: OrderResponse) => {
         console.log(response);

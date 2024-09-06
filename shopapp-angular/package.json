@@ -4,7 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build:production": "ng build --configuration=production",
+    "start:dev": "ng serve --port 4300",
+    "build:dev": "ng build --port 4300",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -18,10 +20,14 @@
     "@angular/platform-browser": "^18.1.0",
     "@angular/platform-browser-dynamic": "^18.1.0",
     "@angular/router": "^18.1.0",
+    "@auth0/angular-jwt": "^5.2.0",
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "@ng-bootstrap/ng-bootstrap": "^17.0.1",
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "font-awesome": "^4.7.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

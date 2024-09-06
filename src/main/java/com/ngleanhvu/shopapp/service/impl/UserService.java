@@ -2,17 +2,21 @@ package com.ngleanhvu.shopapp.service.impl;
 
 import com.ngleanhvu.shopapp.component.JwtTokenUtil;
 import com.ngleanhvu.shopapp.constant.Constant;
+import com.ngleanhvu.shopapp.dto.UpdatedUserDTO;
 import com.ngleanhvu.shopapp.dto.UserDTO;
 import com.ngleanhvu.shopapp.entity.Role;
 import com.ngleanhvu.shopapp.entity.User;
 import com.ngleanhvu.shopapp.exception.DataNotFoundException;
 import com.ngleanhvu.shopapp.repo.IRoleRepo;
 import com.ngleanhvu.shopapp.repo.IUserRepo;
+import com.ngleanhvu.shopapp.response.UserResponse;
 import com.ngleanhvu.shopapp.service.IUserService;
 import com.ngleanhvu.shopapp.util.LocalizationUtils;
+import io.jsonwebtoken.Claims;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -89,5 +93,43 @@ public class UserService implements IUserService {
         );
         authenticationManager.authenticate(authentication);
         return jwtTokenUtil.generateToken(user);
+    }
+
+    @Override
+    public UserResponse getUserDetailsFromToken(String extractToken) throws Exception {
+        if(jwtTokenUtil.isTokenExpired(extractToken)){
+            throw new Exception("Token is expired");
+        }
+        String phoneNumber = jwtTokenUtil.extractPhoneNumber(extractToken);
+        Optional<User> optionalUser = iUserRepo.findUserByPhoneNumber(phoneNumber);
+        if(optionalUser.isEmpty()) throw new Exception("User not found");
+        return UserResponse.fromUser(optionalUser.get());
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateUser(UpdatedUserDTO updatedUserDTO, Integer userId) throws Exception {
+        User existingUser = iUserRepo.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        String newPhoneNumber = updatedUserDTO.getPhoneNumber();
+        if(newPhoneNumber!=null){
+            if(!newPhoneNumber.equals(existingUser.getPhoneNumber()) && iUserRepo.existsByPhoneNumber(newPhoneNumber)){
+                throw new DataIntegrityViolationException("Phone number already exists");
+            }
+        }
+        if(updatedUserDTO.getFullName()!=null)  existingUser.setFullName(updatedUserDTO.getFullName());
+        if(updatedUserDTO.getAddress()!=null) existingUser.setAddress(updatedUserDTO.getAddress());
+        if(updatedUserDTO.getDateOfBirth()!=null) existingUser.setDateOfBirth(updatedUserDTO.getDateOfBirth());
+        if (updatedUserDTO.getPassword() != null
+                && !updatedUserDTO.getPassword().isEmpty()) {
+            if(!updatedUserDTO.getPassword().equals(updatedUserDTO.getRetypePassword())) {
+                throw new DataNotFoundException("Password and retype password not the same");
+            }
+            String newPassword = updatedUserDTO.getPassword();
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            existingUser.setPassword(encodedPassword);
+        }
+        iUserRepo.save(existingUser);
+        return modelMapper.map(existingUser, UserResponse.class);
     }
 }

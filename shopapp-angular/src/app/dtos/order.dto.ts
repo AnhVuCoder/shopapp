@@ -12,6 +12,7 @@ export class OrderDTO {
   total_money: number;
   coupon_code: string;
   cart_items: CartItemDTO[];
+  status: string;
   constructor(data: any) {
     this.user_id = data.user_id;
     this.phone_number = data.phone_number;
@@ -24,5 +25,6 @@ export class OrderDTO {
     this.coupon_code = data.coupon_code;
     this.total_money = data.total_money;
     this.cart_items = data.cart_items;
+    this.status = data.status;
   }
 }

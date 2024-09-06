@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart.service';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-detail-product',
@@ -23,10 +24,15 @@ export class DetailProductComponent implements OnInit {
   public quantity: number = 1;
   constructor(
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    private router: ActivatedRoute,
+    private route: Router
   ) {}
   ngOnInit(): void {
-    const idParam = 1;
+    let idParam = '';
+    this.router.paramMap.subscribe((params) => {
+      idParam = params.get('id')!;
+    });
     if (idParam !== null) {
       this.productId = +idParam;
     }
@@ -73,7 +79,9 @@ export class DetailProductComponent implements OnInit {
     }
   }
   onAddToCart(): void {
-    console.log(this.quantity, this.productId);
     this.cartService.addToCart(this.productId, this.quantity);
+  }
+  onClickPurchase(productId: number, quantity: number) {
+    this.route.navigate(['orders']);
   }
 }

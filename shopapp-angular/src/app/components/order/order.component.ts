@@ -16,6 +16,9 @@ import { ProductService } from '../../services/product.service';
 import { OrderService } from '../../services/order.service';
 import { environment } from '../../environments/environment';
 import { Validator } from 'class-validator';
+import { Token } from '@angular/compiler';
+import { TokenService } from '../../services/token.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order',
@@ -46,11 +49,14 @@ export class OrderComponent implements OnInit {
     total_money: 0,
     coupon_code: '',
     cart_items: [],
+    status: '',
   };
   public totalAmount = 0;
   ngOnInit(): void {
+    this.orderData.user_id = this.tokenService.getUserId();
     const cart = this.cartService.getCart();
     const productIds = Array.from(cart.keys());
+    if (productIds.length === 0) return;
     this.productService.getProductByIds(productIds).subscribe({
       next: (response) => {
         this.cartItems = productIds.map((productId) => {
@@ -76,7 +82,9 @@ export class OrderComponent implements OnInit {
     private cartService: CartService,
     private orderService: OrderService,
     private fb: FormBuilder,
-    private productService: ProductService
+    private productService: ProductService,
+    private tokenService: TokenService,
+    private router: Router
   ) {
     this.orderForm = this.fb.group({
       fullname: ['', [Validators.required]],
@@ -100,9 +108,12 @@ export class OrderComponent implements OnInit {
           quantity: p.quantity,
         };
       });
+      this.orderData.total_money = this.totalAmount;
       this.orderService.createOrder(this.orderData).subscribe({
         next: (response) => {
-          console.log(response);
+          this.cartService.clearCart();
+          alert('Đặt hàng thành công!');
+          this.router.navigate(['']);
         },
         complete: () => {
           this.calculateTotal();

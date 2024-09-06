@@ -1,0 +1,97 @@
+<app-header></app-header>
+<form [formGroup]="userForm">
+  <div class="row mb-3">
+    <div class="col-md-3 mx-auto">
+      <h2 class="product-header">Thông tin người dùng</h2>
+      <div class="mb-3">
+        <label for="fullname" class="form-label">Họ và tên</label>
+        <input
+          formControlName="fullname"
+          type="text"
+          id="fullname"
+          class="form-control"
+          [class.is-invalid]="
+            userForm.get('fullname')!.invalid &&
+            userForm.get('fullname')!.touched
+          "
+        />
+        <div
+          *ngIf="
+            userForm.get('fullname')!.invalid &&
+            userForm.get('fullname')!.touched
+          "
+          class="invalid-feedback"
+        >
+          Họ và tên là trường bắt buộc.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="address" class="form-label">Địa chỉ</label>
+        <input
+          formControlName="address"
+          type="text"
+          id="address"
+          class="form-control"
+          [class.is-invalid]="
+            userForm.get('address')!.invalid && userForm.get('address')!.touched
+          "
+        />
+        />
+      </div>
+      <div class="mb-3">
+        <label for="address" class="form-label">Ngày sinh</label>
+        <input
+          formControlName="date_of_birth"
+          type="date"
+          id="address"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Mật khẩu</label>
+        <input
+          type="password"
+          formControlName="password"
+          id="password"
+          class="form-control"
+          [class.is-invalid]="
+            userForm.get('password')!.invalid &&
+            userForm.get('password')!.touched
+          "
+        />
+        <div
+          *ngIf="
+            userForm.get('password')!.invalid &&
+            userForm.get('password')!.touched
+          "
+          class="invalid-feedback"
+        >
+          Mật khẩu ít nhất 3 ký tự.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="retype_password" class="form-label"
+          >Xác nhận mật khẩu</label
+        >
+        <input
+          type="password"
+          formControlName="retype_password"
+          id="retype_password"
+          class="form-control"
+          [class.is-invalid]="
+            userForm.get('retype_password')!.invalid &&
+            userForm.get('retype_password')!.touched
+          "
+        />
+        <div
+          *ngIf="userForm.hasError('passwordMismatch')"
+          class="invalid-feedback"
+        >
+          Mật khẩu không khớp.
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="save()">Lưu</button>
+    </div>
+  </div>
+</form>
+<app-footer></app-footer>

@@ -13,6 +13,8 @@ import com.ngleanhvu.shopapp.response.OrderResponse;
 import com.ngleanhvu.shopapp.service.IOrderService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,7 @@ public class OrderService implements IOrderService {
     private ModelMapper modelMapper;
     @Autowired
     private IOrderDetailRepo iOrderDetailRepo;
+
     @Override
     @Transactional
     public OrderResponse createOrder(OrderDTO orderDTO) throws DataNotFoundException {
@@ -52,7 +55,7 @@ public class OrderService implements IOrderService {
         order.setActive(true);
         iOrderRepo.save(order);
         List<OrderDetail> orderDetails = new ArrayList<>();
-        for(CartItemDTO item: orderDTO.getCartItemDTOs()){
+        for (CartItemDTO item : orderDTO.getCartItemDTOs()) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(order);
             int productId = item.getProductId();
@@ -108,5 +111,10 @@ public class OrderService implements IOrderService {
                 .stream()
                 .map(order -> modelMapper.map(order, OrderResponse.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Order> getOrdersByKeyword(String keyword, Pageable pageable) {
+        return iOrderRepo.findByKeyword(keyword, pageable);
     }
 }

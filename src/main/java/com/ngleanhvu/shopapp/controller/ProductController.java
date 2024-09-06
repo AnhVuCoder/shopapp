@@ -12,6 +12,8 @@ import com.ngleanhvu.shopapp.response.ProductListResponse;
 import com.ngleanhvu.shopapp.response.ProductResponse;
 import com.ngleanhvu.shopapp.service.IProductService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -37,29 +39,33 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("${api.prefix}/products")
 public class ProductController {
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     @Autowired
     private IProductService iProductService;
+
     @GetMapping
     public ResponseEntity<ProductListResponse> getAllProducts(@RequestParam(name = "page", defaultValue = "1") int page,
                                                               @RequestParam(name = "limit", defaultValue = "10") int limit,
                                                               @RequestParam(name = "keyword", defaultValue = "") String keyword,
                                                               @RequestParam(name = "category_id", defaultValue = "0") Integer categoryId) {
         PageRequest pageRequest = PageRequest.of(
-                page-1, limit,
+                page - 1, limit,
                 Sort.by("id").ascending()
         );
+        logger.info(String.format("keyword = %s", keyword));
         Page<ProductResponse> productPage = iProductService.getAllProducts(keyword, categoryId, pageRequest);
         List<ProductResponse> list = productPage.getContent();
         return ResponseEntity.ok().body(ProductListResponse.builder()
                 .productResponseList(list)
                 .totalPages(productPage.getTotalPages()).build());
     }
+
     @GetMapping("/images/{imageName}")
-    public ResponseEntity<?> viewImage(@PathVariable String imageName){
-        try{
-            java.nio.file.Path imagePath=Paths.get("uploads/"+imageName);
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/" + imageName);
             UrlResource resource = new UrlResource(imagePath.toUri());
-            if(resource.exists()){
+            if (resource.exists()) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(resource);
@@ -68,10 +74,11 @@ public class ProductController {
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(new UrlResource(Paths.get("uploads/notFound.jpeg").toUri()));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
+
     // API add a new product
     @PostMapping
     public ResponseEntity<?> insertProduct(@Valid @RequestBody ProductDTO productDTO,
@@ -152,7 +159,7 @@ public class ProductController {
 
     private ResponseEntity<String> generateFakeProductsData() throws Exception {
         Faker faker = new Faker();
-        for (int i = 0; i < 100  ; i++) {
+        for (int i = 0; i < 100; i++) {
             String name = faker.commerce().productName();
             if (iProductService.existsByName(name)) continue;
             ProductDTO productDTO = ProductDTO.builder()
@@ -190,15 +197,16 @@ public class ProductController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/by-ids")
-    public ResponseEntity<?> getProductByIds(@RequestParam("ids") String ids){
-        try{
+    public ResponseEntity<?> getProductByIds(@RequestParam("ids") String ids) {
+        try {
             List<Integer> listIds = Arrays.stream(ids.split(","))
                     .map(Integer::parseInt)
                     .toList();
             List<ProductResponse> productResponses = iProductService.findProductByIds(listIds);
             return ResponseEntity.ok().body(productResponses);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

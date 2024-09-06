@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/shopapp?useSSL=false&serverTimezone=UTC
+    url: ${SPRING_DATA_SOURCE:jdbc:mysql://localhost:3306/shopapp?useSSL=false&serverTimezone=UTC}
     username: root
-    password: 1234vu@@
+    password: ${MYSQL_ROOT_PASSWORD:1234vu@@}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -29,3 +29,5 @@ api:
 jwt:
   expiration: 2592000
   secretKey: TaqlmGv1iEDMRiFp/pHuID1+T84IABfuA0xXh4GhiUI=
+
+  logging.level.org.springframework.security: DEBUG

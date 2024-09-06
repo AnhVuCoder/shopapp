@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { RoleService } from '../../services/role.service';
 import { Role } from '../../models/role';
 import { CommonModule } from '@angular/common';
+import { UserResponse } from '../../responses/user/UserResponse';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -22,7 +23,8 @@ export class LoginComponent implements OnInit {
   password: string;
   roles!: Role[];
   selectedRole!: Role;
-  rememberMe!: boolean;
+  rememberMe: boolean;
+  userResponse?: UserResponse;
   constructor(
     private userService: UserService,
     private tokenService: TokenService,
@@ -31,6 +33,7 @@ export class LoginComponent implements OnInit {
   ) {
     this.phoneNumber = '';
     this.password = '';
+    this.rememberMe = false;
   }
   ngOnInit(): void {
     debugger;
@@ -54,11 +57,26 @@ export class LoginComponent implements OnInit {
       role_id: this.selectedRole?.id ?? 1,
     };
     this.userService.login(loginDTO).subscribe({
-      next: (responese: LoginResponse) => {
-        debugger;
-        const { token } = responese;
+      next: (response: LoginResponse) => {
+        const { token } = response;
         if (this.rememberMe) {
           this.tokenService.setToken(token);
+          this.userService.getUserDetails(token).subscribe({
+            next: (userResponse: any) => {
+              debugger;
+              this.userResponse = {
+                ...userResponse,
+              };
+              this.userService.saveUserDetailsToLocalStorage(userResponse);
+              if (this.userResponse?.role.id === 1)
+                this.router.navigate(['/admin']);
+              else if (this.userResponse?.role.id === 2)
+                this.router.navigate(['/']);
+            },
+            error: (err) => {
+              console.log(err);
+            },
+          });
         }
       },
       complete: () => {},

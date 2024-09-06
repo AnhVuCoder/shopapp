@@ -42,4 +42,6 @@ public class OrderDTO {
     LocalDate shippingDate;
     @JsonProperty("cart_items")
     List<CartItemDTO> cartItemDTOs;
+    @JsonProperty("status")
+    String status;
 }

@@ -69,7 +69,12 @@
           <button class="btn btn-primary" (click)="onAddToCart()">
             Thêm vào giỏ hàng
           </button>
-          <button class="btn btn-success">Mua ngay</button>
+          <button
+            class="btn btn-success"
+            (click)="onClickPurchase(product.id, quantity)"
+          >
+            Mua ngay
+          </button>
         </div>
         <div class="product-quantity">
           <div class="border-wrapper">

@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../services/category.service';
 import { CommonModule } from '@angular/common';
 import { Category } from '../../models/Category';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +30,8 @@ export class HomeComponent implements OnInit {
   public txtSearchProducts: string = '';
   constructor(
     private productService: ProductService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     this.onGetProducts('', this.selectedCategoryId, 1, this.itemsPerPage);
@@ -84,7 +86,6 @@ export class HomeComponent implements OnInit {
   onGetCategories() {
     this.categoryService.getAllCategories().subscribe({
       next: (response) => {
-        console.log(response);
         this.categories = response;
       },
       complete: () => {},
@@ -102,5 +103,8 @@ export class HomeComponent implements OnInit {
       this.currentPage,
       this.itemsPerPage
     );
+  }
+  onClickProduct(productId: number) {
+    this.router.navigate(['products', productId]);
   }
 }
